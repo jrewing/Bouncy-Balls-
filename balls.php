@@ -8,9 +8,9 @@
   
  </head>
  <body>
-   <canvas id="canvas" width="2500" height="2000"></canvas>
+   <canvas id="canvas" width="1600" height="800"></canvas>
    <script type="text/javascript">
-   var world = new BallWorld(19.14,2,2500,2000);
+   var world = new BallWorld(19.14,2,1600,800);
    var drag = 0.0;
    var ygravity = 0;
    var xgravity = 0;
@@ -50,5 +50,6 @@
    window.setInterval(function(){world.animator(balls);}, 40);
    
    </script>
+   <div id="output" style="background-color: yellow; height: 100px; width:100px;"></div>
  </body>
 </html>

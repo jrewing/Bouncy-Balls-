@@ -5,9 +5,18 @@
 function BallWorld(gravity,xgravity,width,height){
 	var ctx = document.getElementById('canvas').getContext('2d');
 	var canvas = document.getElementById("canvas");
+	canvas.onmousedown = mdown;
+	canvas.onmouseup = mup;
+	
 	//ctx.save();
+	this.canvas = canvas;
+	this.domousedrag = false;
+	this.lastmousex = -1;
+	this.lastmousey = -1;
+	this.dragball = null;
 	this.gravity = gravity;
 	this.xgravity = xgravity;
+	this.startdragtime = null;
 	this.types = new Object();
 	this.types["default"] = 0;
 	this.types["killer"] = 1;
@@ -23,8 +32,54 @@ function BallWorld(gravity,xgravity,width,height){
 	this.animator = animator;
 	this.ctx = ctx;
 	this.ctx.clearRect(0,0,this.width,this.height);
-	this.walltype = 1; /**1 = endless, 0 = solid*/
+	this.walltype = 2; /**1 = endless, 2 = solid*/
 }
+
+function mdown(e){
+	mx = e.pageX - world.canvas.offsetLeft;
+	my = e.pageY - world.canvas.offsetTop;
+	for ( var i = 0; i < balls.length; i++) {
+		if(((balls[i].xpos-balls[i].radius)<mx) && ((balls[i].xpos+balls[i].radius)>mx) && ((balls[i].ypos-balls[i].radius)<my) && ((balls[i].ypos+balls[i].radius)>my)){
+			world.domousedrag = true;
+			world.startdragtime = new Date().getTime();
+			world.dragball = balls[i];
+			world.canvas.onmousemove = dragball;
+			
+		}
+	}
+}
+
+function mup(){
+	world.domousedrag = false;
+	world.canvas.onmousemove = null;
+	world.dragball = null;
+	world.lastmousex = -1;
+	world.lastmousey = -1;
+	world.startdragtime = null;
+}
+
+function dragball(e){
+	mx = e.pageX - world.canvas.offsetLeft;
+	my = e.pageY - world.canvas.offsetTop;
+	now = new Date().getTime();
+	if(world.domousedrag ){
+		
+		world.dragball.xpos = mx;
+		world.dragball.ypos = my;
+		if((world.startdragtime-now)>40){
+			world.startdragtime = now;
+			world.dragball.xspeed = mx - world.lastmousex;
+			world.dragball.yspeed = my - world.lastmousey;
+			world.lastmousex = mx;
+			world.lastmousey = my;
+		}
+		
+		
+	}
+	
+}
+
+
 
 function animator(balls){
 	this.ctx.clearRect(0,0,this.width,this.height);
@@ -165,7 +220,10 @@ function Ball(radius,color,xpos,ypos,xspeed,yspeed,mass,world,drag,xgravity,ygra
 	this.scalex = 1;
 	this.scaley = 1;
 	this.drag = drag;
+	
 	this.types = new Array();
+	this.trail = new Trail(this,6,"sparkling");
+	this.drawTrail = drawTrail;
 	if(isNaN(xgravity) == true){
 		this.xgravity = this.world.xgravity;
 	}else{
@@ -191,6 +249,13 @@ function Ball(radius,color,xpos,ypos,xspeed,yspeed,mass,world,drag,xgravity,ygra
 	
 }
 
+function Trail(ball,maxlength,type){
+	this.ball = ball;
+	this.path = new Array();
+	this.maxlength = maxlength;
+	this.type = type;
+	
+}
 
 
 function drawBall(){
@@ -249,6 +314,46 @@ function drawBall(){
 	this.world.ctx.fill();
 	this.world.ctx.closePath();
 	this.world.ctx.restore();
+	
+	this.world.ctx.restore();
+}
+
+function drawTrail(){
+	this.trail.path.push(new Array(this.xpos,this.ypos));
+
+	if(this.trail.path.length > this.trail.maxlength){
+		this.trail.path.shift();
+	}
+	
+	this.world.ctx.save();
+	//this.world.ctx.translate(this.xpos,this.ypos);
+	
+	this.world.ctx.beginPath();
+	
+	//this.world.ctx.fillStyle = this.color;
+	var lineargradient;
+	this.world.ctx.lineWidth = this.radius*2-4;
+	this.world.ctx.lineJoin = "round";
+	this.world.ctx.lineCap = "round";
+	//this.world.ctx.globalCompositeOperation = "destination-over";
+	this.world.ctx.moveTo(this.trail.path[0][0],this.trail.path[0][1]);
+	lineargradient = this.world.ctx.createLinearGradient(this.trail.path[0][0],this.trail.path[0][1],this.trail.path[this.trail.path.length-1][0],this.trail.path[this.trail.path.length-1][1]);
+	lineargradient.addColorStop(0,'red');
+	lineargradient.addColorStop(0.14,'orange');
+	lineargradient.addColorStop(0.28,'yellow');
+	lineargradient.addColorStop(0.42,'green');
+	lineargradient.addColorStop(0.56,'blue');
+	lineargradient.addColorStop(0.70,'indigo');
+	lineargradient.addColorStop(1,'violet');
+	for (i = 1; i < this.trail.path.length; i++) {
+		
+		
+		this.world.ctx.strokeStyle = lineargradient;
+		this.world.ctx.lineTo(this.trail.path[i][0],this.trail.path[i][1]);
+		this.world.ctx.stroke();
+	}
+	
+	this.world.ctx.closePath();
 	
 	this.world.ctx.restore();
 }
@@ -369,8 +474,6 @@ function moveBall(){
 		}
 		this.angle += this.rotation;
 		
-		
-		
 }
 
 function attract(ball, allballs,index){
@@ -403,7 +506,9 @@ function attract(ball, allballs,index){
 function animate(){
 	this.moveBall();
 	//this.world.ctx.clearRect(0,0,this.world.width,this.world.height);
+	this.drawTrail();
 	this.drawBall();
+	
 }
 
 function redirectBall(){
