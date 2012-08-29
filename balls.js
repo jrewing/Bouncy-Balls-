@@ -27,6 +27,7 @@ function BallWorld(gravity,xgravity,width,height){
 	this.types["lightning"] = 6;
 	this.types["gravitron"] = 7;
 	this.types["deflectron"] = 8;
+	this.types["trail"] = 9;
 	this.width = width;
 	this.height = height;
 	this.animator = animator;
@@ -228,8 +229,7 @@ function Ball(radius,color,xpos,ypos,xspeed,yspeed,mass,world,drag,xgravity,ygra
 	this.drag = drag;
 	this.bounciness = bounciness;
 	this.types = new Array();
-	this.trail = new Trail(this,6,"sparkling");
-	this.drawTrail = drawTrail;
+	
 	if(isNaN(xgravity) == true){
 		this.xgravity = this.world.xgravity;
 	}else{
@@ -244,11 +244,20 @@ function Ball(radius,color,xpos,ypos,xspeed,yspeed,mass,world,drag,xgravity,ygra
 	this.angle = angle;
 	if(types != null){
 		for(var i = 0;i < types.length; i++){
-			this.types[i] = this.world.types[types[i]];
+			if (types[i].checked == true) {
+				
+				this.types[i] = this.world.types[types[i].value];
+				if(types[i].value == 9){
+					this.trail = new Trail(this,6,"sparkling");
+					this.drawTrail = drawTrail;
+				}
+			}
 		}
 	}else{
 		this.types = Array(0);
 	}
+	
+	
 	this.destroy = false;
 	
 	
@@ -484,26 +493,28 @@ function moveBall(){
 }
 
 function attract(ball, allballs,index){
-	var attraction_radius = 2000;
+	var attraction_radius = 0;
 	var distance = 0;
 	for (var ii = 0; ii < allballs.length; ii++) {
 		if((allballs[ii].types.indexOf(7) != -1) && (index != ii)){
 		distance = Math.sqrt(Math.pow(ball.xpos-allballs[ii].xpos, 2)+Math.pow(ball.ypos-allballs[ii].ypos, 2));
-	
+		attraction_radius = allballs[ii].mass;
 		if(distance < (allballs[ii].radius+ball.radius+attraction_radius)){
 			var xrelative = ball.xpos - allballs[ii].xpos;
 			var yrelative = ball.ypos - allballs[ii].ypos;
 			//var angle =  Math.asin(yrelative/distance);
-			
+			/**
+			 * @TODO: aren't these the same?
+			 */
 			if(xrelative > 0){
-				ball.xspeed = ball.xspeed - xrelative/attraction_radius;
-			}else if(xrelative < 0){
-				ball.xspeed = ball.xspeed + (-xrelative/attraction_radius);
+				ball.xspeed = ball.xspeed*0.9 - allballs[ii].mass/(ball.mass);
+			}else{
+				ball.xspeed = ball.xspeed*0.9 + allballs[ii].mass/(ball.mass);
 			}
 			if(yrelative > 0){
-				ball.yspeed = ball.yspeed - yrelative/attraction_radius;
-			}else if(yrelative < 0){
-				ball.yspeed = ball.yspeed + (-yrelative/attraction_radius);
+				ball.yspeed = ball.yspeed*0.9 - allballs[ii].mass/(ball.mass);
+			}else{
+				ball.yspeed = ball.yspeed*0.9 + allballs[ii].mass/(ball.mass);
 			}
 		}
 	}
@@ -513,7 +524,7 @@ function attract(ball, allballs,index){
 function animate(){
 	this.moveBall();
 	//this.world.ctx.clearRect(0,0,this.world.width,this.world.height);
-	this.drawTrail();
+	//this.drawTrail();
 	this.drawBall();
 	
 }

@@ -71,9 +71,9 @@ width: 12%;
 		var drag = +form.drag.value; 
 		var spin = +form.spin.value;
 		var angle = +form.angle.value;
-		//var types = form.types.value;
+		var types = form.types;
 		var bounciness = +form.bounciness.value;
-	   balls.push(new Ball(radius,color,xpos,ypos,xspeed,yspeed,mass,world,drag,xgravity,ygravity,spin,angle,"",bounciness));
+	   balls.push(new Ball(radius,color,xpos,ypos,xspeed,yspeed,mass,world,drag,xgravity,ygravity,spin,angle,types,bounciness));
 		
 	}
    </script>
@@ -104,7 +104,6 @@ width: 12%;
    	<input id="spin" type="text" value="0.1"  ></input>
    	<legend for="angle">Angle</legend>
    	<input id="angle" type="text" value="0.1"  ></input>
-   	<?php /*
    	<legend for="types">Types</legend>
    	<input type="checkbox" name="types" value="metal">Metal</input>
    	<input type="checkbox" name="types" value="killer">Killer</input>
@@ -112,15 +111,8 @@ width: 12%;
    	<input type="checkbox" name="types" value="deflectron">Deflectron</input>
    	<input type="checkbox" name="types" value="glass">Glass</input>
    	<input type="checkbox" name="types" value="tail">Tail</input>
-   	<input type="checkbox" name="types" value=""></input>
-   	<input type="checkbox" name="types" value=""></input>
-   	<input type="checkbox" name="types" value=""></input>
-   	<input type="checkbox" name="types" value=""></input>
-   	<input type="checkbox" name="types" value=""></input>
-   	*/
-?>
    	<legend for="bounciness">Bounciness</legend>
-   	<input id="bounciness" type="text" />
+   	<input id="bounciness" type="text" value="1" />
    	<input type="button" id="new_ball" onclick="newBall(this.form)" value="New Ball"></input>
    </form>
    <script>document.getElementById("drag").value = drag;</script>
