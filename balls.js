@@ -62,14 +62,20 @@ function dragball(e){
 	mx = e.pageX - world.canvas.offsetLeft;
 	my = e.pageY - world.canvas.offsetTop;
 	now = new Date().getTime();
+	world.dragball.resting = false;
 	if(world.domousedrag ){
 		
 		world.dragball.xpos = mx;
 		world.dragball.ypos = my;
-		if((world.startdragtime-now)>40){
+		if((world.startdragtime-now)<40){
 			world.startdragtime = now;
-			world.dragball.xspeed = mx - world.lastmousex;
-			world.dragball.yspeed = my - world.lastmousey;
+			if((world.lastmousex > -1)&&(world.lastmousey > -1)){
+				world.dragball.xspeed = mx - world.lastmousex;
+				world.dragball.yspeed = my - world.lastmousey;
+			}else{
+				world.dragball.xspeed = 0;
+				world.dragball.yspeed = 0;
+			}
 			world.lastmousex = mx;
 			world.lastmousey = my;
 		}
@@ -200,7 +206,7 @@ function checkCollisions(ball, allballs, ballindex){
 	}
 }
 
-function Ball(radius,color,xpos,ypos,xspeed,yspeed,mass,world,drag,xgravity,ygravity,rotation,angle,types){
+function Ball(radius,color,xpos,ypos,xspeed,yspeed,mass,world,drag,xgravity,ygravity,rotation,angle,types,bounciness){
 	this.radius = radius;
 	this.color = color;
 	this.xpos = xpos;
@@ -220,7 +226,7 @@ function Ball(radius,color,xpos,ypos,xspeed,yspeed,mass,world,drag,xgravity,ygra
 	this.scalex = 1;
 	this.scaley = 1;
 	this.drag = drag;
-	
+	this.bounciness = bounciness;
 	this.types = new Array();
 	this.trail = new Trail(this,6,"sparkling");
 	this.drawTrail = drawTrail;
@@ -245,7 +251,7 @@ function Ball(radius,color,xpos,ypos,xspeed,yspeed,mass,world,drag,xgravity,ygra
 	}
 	this.destroy = false;
 	
-	this.bounciness = 1;
+	
 	
 }
 
@@ -319,6 +325,7 @@ function drawBall(){
 }
 
 function drawTrail(){
+	var i = 0;
 	this.trail.path.push(new Array(this.xpos,this.ypos));
 
 	if(this.trail.path.length > this.trail.maxlength){
@@ -479,7 +486,7 @@ function moveBall(){
 function attract(ball, allballs,index){
 	var attraction_radius = 2000;
 	var distance = 0;
-	for (ii = 0; ii < allballs.length; ii++) {
+	for (var ii = 0; ii < allballs.length; ii++) {
 		if((allballs[ii].types.indexOf(7) != -1) && (index != ii)){
 		distance = Math.sqrt(Math.pow(ball.xpos-allballs[ii].xpos, 2)+Math.pow(ball.ypos-allballs[ii].ypos, 2));
 	
