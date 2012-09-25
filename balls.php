@@ -17,9 +17,9 @@ width: 12%;
   
  </head>
  <body>
-   <canvas id="canvas" width="1600" height="800" ></canvas>
+   <canvas id="canvas" width="16" height="16" ></canvas>
    <script type="text/javascript">
-   var world = new BallWorld(19.14,2,1600,800);
+   var world = new BallWorld(19.14,2,16,16);
    var drag = 0.0;
    var ygravity = 0;
    var xgravity = 0;

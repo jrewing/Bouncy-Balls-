@@ -9,6 +9,7 @@ function BallWorld(gravity,xgravity,width,height){
 	canvas.onmouseup = mup;
 	
 	//ctx.save();
+	this.maxspeed = 20;
 	this.canvas = canvas;
 	this.domousedrag = false;
 	this.lastmousex = -1;
@@ -483,6 +484,16 @@ function moveBall(){
 			this.yspeed = this.yspeed+(this.ygravity/25);
 			this.xspeed = this.xspeed+(this.xgravity/25);
 		}
+		
+		if (this.xspeed > this.world.maxspeed) {
+			this.xspeed = this.world.maxspeed;
+		}
+		
+		if (this.yspeed > this.world.maxspeed) {
+			this.yspeed = this.world.maxspeed;
+		}
+
+		
 		this.xpos = this.xpos+this.xspeed; 
 		this.ypos = this.ypos+this.yspeed;
 		if(this.angle > Math.PI*2){
