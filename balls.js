@@ -9,7 +9,7 @@ function BallWorld(gravity,xgravity,width,height){
 	canvas.onmouseup = mup;
 	
 	//ctx.save();
-	this.maxspeed = 20;
+	this.maxspeed = 5;
 	this.canvas = canvas;
 	this.domousedrag = false;
 	this.lastmousex = -1;
@@ -191,6 +191,12 @@ function checkCollisions(ball, allballs, ballindex){
 					totalmass = allballs[ii].mass + ball.mass;
 					relativexspeed = -ball.xspeed + allballs[ii].xspeed;
 					relativeyspeed = -ball.yspeed + allballs[ii].yspeed;
+					/**
+					 * avoid division by zero
+					 */
+					if(totalmass == 0){
+						totalmass = 2;
+					}
 					ball.xspeed = ball.xspeed +relativexspeed * allballs[ii].mass/(totalmass/2);// + (allballs[ii].xspeed * ball.mass/totalmass);
 					ball.yspeed = ball.yspeed +relativeyspeed * allballs[ii].mass/(totalmass/2);
 					allballs[ii].xspeed = allballs[ii].xspeed - relativexspeed * ball.mass/(totalmass/2);
