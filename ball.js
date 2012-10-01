@@ -1,52 +1,58 @@
 
-
-function mdown(e){
-	mx = e.pageX - world.canvas.offsetLeft;
-	my = e.pageY - world.canvas.offsetTop;
-	for ( var i = 0; i < balls.length; i++) {
-		if(((balls[i].xpos-balls[i].radius)<mx) && ((balls[i].xpos+balls[i].radius)>mx) && ((balls[i].ypos-balls[i].radius)<my) && ((balls[i].ypos+balls[i].radius)>my)){
-			world.domousedrag = true;
-			world.startdragtime = new Date().getTime();
-			world.dragball = balls[i];
-			world.canvas.onmousemove = dragball;
-			
-		}
+function Ball(radius,color,xpos,ypos,xspeed,yspeed,mass,world,drag,xgravity,ygravity,rotation,angle,types,bounciness){
+	this.radius = radius;
+	this.color = color;
+	this.xpos = xpos;
+	this.ypos = ypos;
+	this.xspeed = xspeed;
+	this.yspeed = yspeed;
+	this.mass = mass;
+	this.drawBall = drawBall;
+	this.moveBall = moveBall;
+	this.redirectBall = redirectBall;
+	this.world = world;
+	this.animate = animate;
+	this.resting = false;
+	this.hasCollided = 0;
+	this.boingProgress = 0;
+	this.boingFase = 0;
+	this.scalex = 1;
+	this.scaley = 1;
+	this.drag = drag;
+	this.bounciness = bounciness;
+	this.types = new Array();
+	
+	if(isNaN(xgravity) == true){
+		this.xgravity = this.world.xgravity;
+	}else{
+		this.xgravity = xgravity;
 	}
-}
-
-function mup(){
-	world.domousedrag = false;
-	world.canvas.onmousemove = null;
-	world.dragball = null;
-	world.lastmousex = -1;
-	world.lastmousey = -1;
-	world.startdragtime = null;
-}
-
-function dragball(e){
-	mx = e.pageX - world.canvas.offsetLeft;
-	my = e.pageY - world.canvas.offsetTop;
-	now = new Date().getTime();
-	world.dragball.resting = false;
-	if(world.domousedrag ){
-		
-		world.dragball.xpos = mx;
-		world.dragball.ypos = my;
-		if((world.startdragtime-now)<40){
-			world.startdragtime = now;
-			if((world.lastmousex > -1)&&(world.lastmousey > -1)){
-				world.dragball.xspeed = mx - world.lastmousex;
-				world.dragball.yspeed = my - world.lastmousey;
-			}else{
-				world.dragball.xspeed = 0;
-				world.dragball.yspeed = 0;
+	if(isNaN(ygravity) == true){
+		this.ygravity = this.world.gravity;
+	}else{
+		this.ygravity = ygravity;
+	}
+	this.rotation = rotation;
+	this.angle = angle;
+	if(types != null){
+		for(var i = 0;i < types.length; i++){
+			if (types[i].checked == true) {
+				
+				this.types[i] = this.world.types[types[i].value];
+				if(types[i].value == 9){
+					this.trail = new Trail(this,6,"sparkling");
+					this.drawTrail = drawTrail;
+				}
 			}
-			world.lastmousex = mx;
-			world.lastmousey = my;
 		}
-		
-		
+	}else{
+		this.types = Array(0);
 	}
+	
+	
+	this.destroy = false;
+	
+	
 	
 }
 
@@ -83,6 +89,10 @@ function animator(balls){
 	}
 	
 }
+
+/**
+ * @TODO: refactor
+ */
 
 function checkCollisions(ball, allballs, ballindex){
 	var xrelative = 0;
@@ -177,69 +187,12 @@ function checkCollisions(ball, allballs, ballindex){
 	}
 }
 
-function Ball(radius,color,xpos,ypos,xspeed,yspeed,mass,world,drag,xgravity,ygravity,rotation,angle,types,bounciness){
-	this.radius = radius;
-	this.color = color;
-	this.xpos = xpos;
-	this.ypos = ypos;
-	this.xspeed = xspeed;
-	this.yspeed = yspeed;
-	this.mass = mass;
-	this.drawBall = drawBall;
-	this.moveBall = moveBall;
-	this.redirectBall = redirectBall;
-	this.world = world;
-	this.animate = animate;
-	this.resting = false;
-	this.hasCollided = 0;
-	this.boingProgress = 0;
-	this.boingFase = 0;
-	this.scalex = 1;
-	this.scaley = 1;
-	this.drag = drag;
-	this.bounciness = bounciness;
-	this.types = new Array();
-	
-	if(isNaN(xgravity) == true){
-		this.xgravity = this.world.xgravity;
-	}else{
-		this.xgravity = xgravity;
-	}
-	if(isNaN(ygravity) == true){
-		this.ygravity = this.world.gravity;
-	}else{
-		this.ygravity = ygravity;
-	}
-	this.rotation = rotation;
-	this.angle = angle;
-	if(types != null){
-		for(var i = 0;i < types.length; i++){
-			if (types[i].checked == true) {
-				
-				this.types[i] = this.world.types[types[i].value];
-				if(types[i].value == 9){
-					this.trail = new Trail(this,6,"sparkling");
-					this.drawTrail = drawTrail;
-				}
-			}
-		}
-	}else{
-		this.types = Array(0);
-	}
-	
-	
-	this.destroy = false;
-	
-	
-	
-}
 
 function Trail(ball,maxlength,type){
 	this.ball = ball;
 	this.path = new Array();
 	this.maxlength = maxlength;
 	this.type = type;
-	
 }
 
 

@@ -12,14 +12,16 @@ float:left;
 width: 12%;
 }
 </style>
-<script type="text/javascript" src="balls.js">
+<script type="text/javascript" src="ballworld.js">
+<script type="text/javascript" src="ball.js">
+
 </script>
   
  </head>
  <body>
-   <canvas id="canvas" width="16" height="16" ></canvas>
+   <canvas id="canvas" width="800" height="600" ></canvas>
    <script type="text/javascript">
-   var world = new BallWorld(19.14,2,16,16);
+   var world = new BallWorld(19.14,2,800,600);
    var drag = 0.0;
    var ygravity = 0;
    var xgravity = 0;
