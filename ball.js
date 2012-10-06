@@ -39,9 +39,9 @@ function Ball(radius,color,xpos,ypos,xspeed,yspeed,mass,world,drag,xgravity,ygra
 			if (types[i].checked == true) {
 				
 				this.types[i] = this.world.types[types[i].value];
-				if(types[i].value == 9){
+				if(types[i].value == "tail"){
 					this.trail = new Trail(this,6,"sparkling");
-					this.drawTrail = drawTrail;
+					
 				}
 			}
 		}
@@ -193,8 +193,49 @@ function Trail(ball,maxlength,type){
 	this.path = new Array();
 	this.maxlength = maxlength;
 	this.type = type;
+	this.drawTrail = drawTrail;
 }
 
+function drawTrail(){
+	var i = 0;
+	this.path.push(new Array(this.ball.xpos,this.ball.ypos));
+
+	if(this.path.length > this.maxlength){
+		this.path.shift();
+	}
+	
+	world.ctx.save();
+	//this.world.ctx.translate(this.xpos,this.ypos);
+	
+	world.ctx.beginPath();
+	
+	//this.world.ctx.fillStyle = this.color;
+	var lineargradient;
+	world.ctx.lineWidth = this.radius*2-4;
+	world.ctx.lineJoin = "round";
+	world.ctx.lineCap = "round";
+	//this.world.ctx.globalCompositeOperation = "destination-over";
+	world.ctx.moveTo(this.path[0][0],this.path[0][1]);
+	lineargradient = world.ctx.createLinearGradient(this.path[0][0],this.path[0][1],this.path[this.path.length-1][0],this.path[this.path.length-1][1]);
+	lineargradient.addColorStop(0,'red');
+	lineargradient.addColorStop(0.14,'orange');
+	lineargradient.addColorStop(0.28,'yellow');
+	lineargradient.addColorStop(0.42,'green');
+	lineargradient.addColorStop(0.56,'blue');
+	lineargradient.addColorStop(0.70,'indigo');
+	lineargradient.addColorStop(1,'violet');
+	for (i = 1; i < this.path.length; i++) {
+		
+		
+		world.ctx.strokeStyle = lineargradient;
+		world.ctx.lineTo(this.path[i][0],this.path[i][1]);
+		world.ctx.stroke();
+	}
+	
+	world.ctx.closePath();
+	
+	world.ctx.restore();
+}
 
 function drawBall(){
 	this.world.ctx.save();
@@ -256,46 +297,7 @@ function drawBall(){
 	this.world.ctx.restore();
 }
 
-function drawTrail(){
-	var i = 0;
-	this.trail.path.push(new Array(this.xpos,this.ypos));
 
-	if(this.trail.path.length > this.trail.maxlength){
-		this.trail.path.shift();
-	}
-	
-	this.world.ctx.save();
-	//this.world.ctx.translate(this.xpos,this.ypos);
-	
-	this.world.ctx.beginPath();
-	
-	//this.world.ctx.fillStyle = this.color;
-	var lineargradient;
-	this.world.ctx.lineWidth = this.radius*2-4;
-	this.world.ctx.lineJoin = "round";
-	this.world.ctx.lineCap = "round";
-	//this.world.ctx.globalCompositeOperation = "destination-over";
-	this.world.ctx.moveTo(this.trail.path[0][0],this.trail.path[0][1]);
-	lineargradient = this.world.ctx.createLinearGradient(this.trail.path[0][0],this.trail.path[0][1],this.trail.path[this.trail.path.length-1][0],this.trail.path[this.trail.path.length-1][1]);
-	lineargradient.addColorStop(0,'red');
-	lineargradient.addColorStop(0.14,'orange');
-	lineargradient.addColorStop(0.28,'yellow');
-	lineargradient.addColorStop(0.42,'green');
-	lineargradient.addColorStop(0.56,'blue');
-	lineargradient.addColorStop(0.70,'indigo');
-	lineargradient.addColorStop(1,'violet');
-	for (i = 1; i < this.trail.path.length; i++) {
-		
-		
-		this.world.ctx.strokeStyle = lineargradient;
-		this.world.ctx.lineTo(this.trail.path[i][0],this.trail.path[i][1]);
-		this.world.ctx.stroke();
-	}
-	
-	this.world.ctx.closePath();
-	
-	this.world.ctx.restore();
-}
 
 function moveBall(){
 		//Add drag
@@ -469,7 +471,7 @@ function attract(ball, allballs,index){
 function animate(){
 	this.moveBall();
 	//this.world.ctx.clearRect(0,0,this.world.width,this.world.height);
-	//this.drawTrail();
+	this.trail.drawTrail();
 	this.drawBall();
 	
 }

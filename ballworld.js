@@ -33,7 +33,7 @@ function BallWorld(gravity,xgravity,width,height){
 	this.types["lightning"] = 6;
 	this.types["gravitron"] = 7;
 	this.types["deflectron"] = 8;
-	this.types["trail"] = 9;
+	this.types["tail"] = 9;
 	this.width = width;
 	this.height = height;
 	this.animator = animator;

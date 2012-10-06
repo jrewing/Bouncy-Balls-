@@ -12,10 +12,10 @@ float:left;
 width: 12%;
 }
 </style>
-<script type="text/javascript" src="ballworld.js">
-<script type="text/javascript" src="ball.js">
+<script type="text/javascript" src="helpers.js"></script> 
+<script type="text/javascript" src="ballworld.js"></script>
+<script type="text/javascript" src="ball.js"></script>
 
-</script>
   
  </head>
  <body>
